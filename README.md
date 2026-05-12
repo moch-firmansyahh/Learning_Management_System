@@ -31,7 +31,7 @@
 | Komponen | Teknologi |
 | :--- | :--- |
 | **Frontend** | React.js, Vite, Tailwind CSS |
-| **Backend** | Node.js, Express.js |
+| **Backend** | Node.js, Express.js, Prisma |
 | **Database** | PostgreSQL / MySQL |
 | **Design** | Figma |
 
@@ -39,96 +39,37 @@
 
 ## 📊 Perancangan Sistem
 
+Pastikan path folder `assets` berada di root repository kamu. Jika folder `assets` ada di luar, gunakan format berikut:
+
 ### DFD Level 0
-![DFD Level 0](Learning_Machine_System/assets/DFD/DFD_Level_0)
+![DFD Level 0](assets/DFD/DFD_Level_0.png)
 
 ### DFD Level 1
-![DFD Level 1](Learning_Machine_System/assets/DFD/DFD_Level_1)
+![DFD Level 1](assets/DFD/DFD_Level_1.png)
 
 ---
 
 ## 🗄️ Entity Relationship Diagram (ERD)
 
-![ERD](Learning_Machine_System/assets/ERD/ERD.png)
+![ERD](assets/ERD/ERD.png)
 
 ---
 
 ## 🏗️ Class Diagram
 
-![Class Diagram](Learning_Machine_System/assets/Class_Diagram/Class_Diagram.png)
+![Class Diagram](assets/Class_Diagram/Class_Diagram.png)
 
 ---
 
 ## 🎨 Mockup Antarmuka (Figma)
 
-> *(Link Figma atau screenshot mockup dapat ditambahkan di sini)*
+> [Klik di sini untuk melihat desain Figma](LINK_FIGMA_KAMU_DISINI)
 
 ---
 
 ## 🚀 Panduan Instalasi
 
-Pastikan kamu sudah menginstal [Node.js](https://nodejs.org/) sebelum memulai.
-
 ### 1. Clone Repository
-
 ```bash
-git clone https://github.com/username/lemas.git
+git clone [https://github.com/username/lemas.git](https://github.com/username/lemas.git)
 cd lemas
-```
-
-### 2. Backend Setup
-
-```bash
-cd backend
-npm install
-```
-
-Buat file `.env` di folder `backend/` dan isi konfigurasi berikut:
-
-```env
-DB_HOST=localhost
-DB_PORT=5432
-DB_NAME=lemas_db
-DB_USER=your_username
-DB_PASS=your_password
-PORT=5000
-```
-
-Jalankan server backend:
-
-```bash
-npm run dev
-```
-
-### 3. Frontend Setup
-
-```bash
-cd ../frontend
-npm install
-npm run dev
-```
-
-Aplikasi akan berjalan di `http://localhost:5173`.
-
----
-
-## 📁 Struktur Proyek
-
-```
-lemas/
-├── backend/
-│   ├── src/
-│   ├── package.json
-│   └── .env
-├── frontend/
-│   ├── src/
-│   ├── public/
-│   └── package.json
-└── README.md
-```
-
----
-
-## 📄 Lisensi
-
-Proyek ini dibuat untuk keperluan akademik — Tugas Besar mata kuliah Implementasi Perancangan Perangkat Lunak.
