@@ -84,6 +84,44 @@ router.get('/me', async (req, res) => {
   }
 });
 
+// Update own profile (email and telepon only)
+router.patch('/me', async (req, res) => {
+  try {
+    const { email, telepon } = req.body;
+    
+    // Validasi email format
+    if (email && !email.includes('@')) {
+      return res.status(400).json({ status: 'error', message: 'Format email tidak valid' });
+    }
+    
+    // Validasi telepon (minimal 10 digit)
+    if (telepon && telepon.length < 10) {
+      return res.status(400).json({ status: 'error', message: 'Nomor telepon minimal 10 digit' });
+    }
+
+    const updatedUser = await prisma.user.update({
+      where: { nomorInduk: req.user.nomorInduk },
+      data: { email, telepon },
+      select: {
+        nomorInduk: true,
+        nama: true,
+        email: true,
+        telepon: true,
+        fotoUrl: true,
+        role: { select: { nama: true } }
+      }
+    });
+
+    res.status(200).json({
+      status: 'success',
+      message: 'Profil berhasil diperbarui',
+      data: updatedUser
+    });
+  } catch (error) {
+    res.status(500).json({ status: 'error', message: error.message });
+  }
+});
+
 // Change password (works for both dosen & mahasiswa)
 router.post('/change-password', async (req, res) => {
   try {

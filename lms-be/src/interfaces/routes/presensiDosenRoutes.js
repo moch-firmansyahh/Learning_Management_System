@@ -5,6 +5,12 @@ import { PresensiDosenController } from '../controllers/PresensiDosenController.
 import { authMiddleware } from '../middlewares/authMiddleware.js';
 import { prisma } from '../../../lib/prisma.ts';
 
+// Helper untuk normalisasi tanggal ke UTC
+function normalizeDateToUTC(date) {
+    const d = new Date(date);
+    return new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate(), 0, 0, 0, 0));
+}
+
 const router = express.Router();
 
 // Dependency Injection
@@ -17,6 +23,7 @@ router.use(authMiddleware);
 
 router.get('/matkul/:idMataKuliah/daftar-hadir', (req, res) => controller.getDaftarHadir(req, res));
 router.put('/:idPresensi/status', (req, res) => controller.updateStatus(req, res));
+router.put('/nim/:nim/matkul/:idMataKuliah/status', (req, res) => controller.updateStatusByNim(req, res));
 
 /**
  * POST /api/dosen/presensi/matkul/:idMataKuliah/generate
@@ -46,10 +53,10 @@ router.post('/matkul/:idMataKuliah/generate', async (req, res) => {
     // Generate token QR unik
     const token = `LeMaS-${Date.now()}-${Math.random().toString(36).substring(7)}`;
 
-    // Cek apakah sudah ada sesi untuk tanggal yang sama (tanpa jam)
-    const targetDateString = targetDate.toISOString().split('T')[0];
-    const startOfDay = new Date(`${targetDateString}T00:00:00.000Z`);
-    const endOfDay = new Date(`${targetDateString}T23:59:59.999Z`);
+    // Cek apakah sudah ada sesi untuk tanggal yang sama (gunakan UTC)
+    const targetDateNormalized = normalizeDateToUTC(targetDate);
+    const startOfDay = new Date(Date.UTC(targetDateNormalized.getUTCFullYear(), targetDateNormalized.getUTCMonth(), targetDateNormalized.getUTCDate(), 0, 0, 0, 0));
+    const endOfDay = new Date(Date.UTC(targetDateNormalized.getUTCFullYear(), targetDateNormalized.getUTCMonth(), targetDateNormalized.getUTCDate(), 23, 59, 59, 999));
 
     const existingSession = await prisma.presensi.findFirst({
       where: {
@@ -62,25 +69,39 @@ router.post('/matkul/:idMataKuliah/generate', async (req, res) => {
     });
 
     if (existingSession) {
-      return res.status(400).json({
-        error: `Sesi presensi untuk tanggal ${targetDateString} sudah ada`
+      // Sesi sudah ada, generate token baru dan return success
+      const newToken = `LeMaS-${Date.now()}-${Math.random().toString(36).substring(7)}`;
+      return res.status(200).json({
+        message: `Sesi presensi untuk tanggal ${targetDate.toISOString().split('T')[0]} sudah ada`,
+        token: newToken,
+        tanggal: targetDate.toISOString(),
+        existing: true
       });
     }
 
     // Buat sesi presensi untuk setiap mahasiswa pada tanggal tersebut
-    const sessionTime = new Date(targetDate);
+    // Cek dulu per mahasiswa - hanya buat kalau belum ada untuk tanggal ini
+    const sessionTime = normalizeDateToUTC(targetDate);
     
     const createdRecords = await Promise.allSettled(
-      mahasiswaList.map(m =>
-        prisma.presensi.create({
+      mahasiswaList.map(async m => {
+        const existing = await prisma.presensi.findFirst({
+          where: {
+            nim: m.nim,
+            idMataKuliah: parseInt(idMataKuliah),
+            tanggalPertemuan: { gte: startOfDay, lt: endOfDay }
+          }
+        });
+        if (existing) return existing; // Sudah ada, skip
+        return prisma.presensi.create({
           data: {
             nim: m.nim,
             idMataKuliah: parseInt(idMataKuliah),
             statusKehadiran: 'Alpha',
             tanggalPertemuan: sessionTime
           }
-        })
-      )
+        });
+      })
     );
 
     const successCount = createdRecords.filter(r => r.status === 'fulfilled').length;
@@ -92,6 +113,30 @@ router.post('/matkul/:idMataKuliah/generate', async (req, res) => {
     });
   } catch (error) {
     console.error('Generate presensi error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Get daftar hadir untuk tanggal tertentu
+router.get('/daftar-hadir/:idMataKuliah/:tanggal', authMiddleware, async (req, res) => {
+  try {
+    const { idMataKuliah, tanggal } = req.params;
+    const data = await repository.getDaftarHadirByTanggal(idMataKuliah, tanggal);
+    res.status(200).json({ success: true, data });
+  } catch (error) {
+    console.error('Get daftar hadir by tanggal error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Get semua tanggal presensi yang tersedia
+router.get('/dates/:idMataKuliah', authMiddleware, async (req, res) => {
+  try {
+    const { idMataKuliah } = req.params;
+    const dates = await repository.getAllPresensiDates(idMataKuliah);
+    res.status(200).json({ success: true, dates });
+  } catch (error) {
+    console.error('Get all dates error:', error);
     res.status(500).json({ error: error.message });
   }
 });

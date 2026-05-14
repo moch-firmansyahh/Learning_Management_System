@@ -10,47 +10,30 @@ export class DashboardDosenUseCase {
     const nip = dosen.nip;
 
     // Ambil semua data secara paralel agar respons API lebih cepat
-    const [pendingTasks, schedule, totalMahasiswa] = await Promise.all([
-      this.dosenRepository.getPendingTasks(nip),
-      this.dosenRepository.getSchedule(nip),
-      this.dosenRepository.getTotalMahasiswa(nip)
+    const [materiList, totalMahasiswa, submissionStats] = await Promise.all([
+      this.dosenRepository.getMateriList(nip),
+      this.dosenRepository.getTotalMahasiswa(nip),
+      this.dosenRepository.getSubmissionStats(nip)
     ]);
 
-    // Format data sesuai dengan kebutuhan state di dashboardDosen.jsx
-    const formattedPending = (pendingTasks || []).map(pt => {
-      const nama = pt?.mahasiswa?.user?.nama || "Mahasiswa";
-      const isKelompok = !!pt?.kelompok;
-      return {
-        code: isKelompok ? "K" : nama.substring(0, 2).toUpperCase(),
-        name: isKelompok ? pt.kelompok.namaKelompok : nama,
-        type: isKelompok ? "Kelompok" : "Individu",
-        task: pt?.tugas?.judul || "-",
-        course: pt?.tugas?.mataKuliah?.namaMataKuliah || "-",
-        date: pt?.deadlineTugas ? new Date(pt.deadlineTugas).toLocaleDateString('id-ID') : "-",
-        timeStatus: "Menunggu Penilaian",
-        late: false,
-        av: isKelompok ? "av-blue" : "av-teal",
-        navigationPage: isKelompok ? "dosenKelompok" : "dosenNilaiIndividu"
-      };
-    });
-
-    const formattedSchedule = (schedule || []).map(mk => ({
-      time: mk.jadwal || "08:00",
-      color: "var(--color-secondary)",
-      subject: mk.namaMataKuliah,
-      room: mk.ruangKantor || "Ruang Kelas",
-      matkul: `MK${mk.idMataKuliah}`
+    // Format daftar materi
+    const formattedMateri = (materiList || []).map(m => ({
+      id: m.idModulAjar,
+      judul: m.judul,
+      tipe: m.tipe_modul || "Dokumen",
+      mataKuliah: m.mataKuliah?.namaMataKuliah || "-",
+      tanggal: m.tanggal ? new Date(m.tanggal).toLocaleDateString('id-ID') : "-",
+      ukuran: m.ukuran || "-"
     }));
 
     return {
       lecturerName: dosen?.user?.nama || "Dosen",
       stats: {
         totalMahasiswa: totalMahasiswa || 0,
-        tugasPending: (pendingTasks || []).length,
-        rataPresensi: "94.2%"
+        tugasIndividu: submissionStats?.individu || 0,
+        tugasKelompok: submissionStats?.kelompok || 0
       },
-      pendingTasks: formattedPending,
-      jadwal: formattedSchedule
+      daftarMateri: formattedMateri
     };
   }
 }

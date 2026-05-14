@@ -61,4 +61,49 @@ export class PrismaDashboardDosenRepository {
       return 0;
     }
   }
+
+  async getMateriList(nipDosen) {
+    try {
+      return await prisma.modulAjar.findMany({
+        where: {
+          mataKuliah: {
+            nipDosen: nipDosen
+          }
+        },
+        include: {
+          mataKuliah: true
+        },
+        orderBy: { tanggal: 'desc' },
+        take: 10
+      });
+    } catch (error) {
+      console.error("getMateriList error:", error.message);
+      return [];
+    }
+  }
+
+  async getSubmissionStats(nipDosen) {
+    try {
+      const allSubmissions = await prisma.pengumpulanTugas.findMany({
+        where: {
+          tugas: {
+            mataKuliah: {
+              nipDosen: nipDosen
+            }
+          }
+        },
+        include: {
+          kelompok: true
+        }
+      });
+
+      const individu = allSubmissions.filter(s => !s.kelompok).length;
+      const kelompok = allSubmissions.filter(s => s.kelompok).length;
+
+      return { individu, kelompok };
+    } catch (error) {
+      console.error("getSubmissionStats error:", error.message);
+      return { individu: 0, kelompok: 0 };
+    }
+  }
 }

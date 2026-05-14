@@ -6,14 +6,20 @@ constructor(nilaiRepository) {
 async execute(nomorInduk) {
     const rawData = await this.nilaiRepository.getNilaiByNomorInduk(nomorInduk);
     
-    // Logic mengelompokkan nilai per semester
+    // Kelompokkan berdasarkan semester dari mata kuliah
     const groupedBySemester = rawData.reduce((acc, curr) => {
-    const semester = curr.semester || 1;
-    if (!acc[semester]) acc[semester] = [];
-        acc[semester].push(curr);
-        return acc;
+      const semester = curr.mataKuliah?.semester || curr.semester || 1;
+      if (!acc[semester]) acc[semester] = [];
+      acc[semester].push(curr);
+      return acc;
     }, {});
 
-    return groupedBySemester;
+    // Urutkan keys semester
+    const sortedResult = {};
+    Object.keys(groupedBySemester).sort((a, b) => a - b).forEach(key => {
+      sortedResult[key] = groupedBySemester[key];
+    });
+    
+    return sortedResult;
     }
 }

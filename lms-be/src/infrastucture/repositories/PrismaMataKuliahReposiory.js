@@ -31,13 +31,14 @@ export class PrismaMataKuliahRepository {
   }
 
   async findByNim(nim) {
-    // Mata kuliah yang diikuti mahasiswa, melalui relasi Presensi, Nilai, Tugas, atau Kelompok
-    return await prisma.mataKuliah.findMany({
+    // Mata kuliah yang diikuti mahasiswa, melalui relasi Nilai, Presensi, Tugas, atau Kelompok
+    const courses = await prisma.mataKuliah.findMany({
       where: {
         OR: [
+          { nilai: { some: { nomorInduk: nim } } },
           { presensi: { some: { nim: nim } } },
           { tugas: { some: { nim: nim } } },
-          { kelompok: { some: { anggota: { some: { nim: nim } } } } },
+          { kelompok: { some: { anggota: { some: { nim: nim } } } } }
         ],
       },
       include: {
@@ -47,6 +48,12 @@ export class PrismaMataKuliahRepository {
       },
       orderBy: { idMataKuliah: "asc" },
     });
+
+    if (courses.length === 0) return [];
+
+    // Filter hanya semester terakhir (semester aktif)
+    const maxSemester = Math.max(...courses.map(c => c.semester));
+    return courses.filter(c => c.semester === maxSemester);
   }
 
   async findById(id) {

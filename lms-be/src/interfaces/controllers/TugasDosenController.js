@@ -21,9 +21,23 @@ async getAllTugas(req, res) {
 
 async create(req, res) {
     try {
-      // payload dari frontend form
-        const newTask = await this.tugasDosenUseCase.createTugasAtauKuis(req.body);
-        res.status(201).json({ message: "Tugas berhasil dibuat", data: newTask });
+      // payload dari frontend form + file info if uploaded
+      const payload = { ...req.body };
+
+      // Add file info if file was uploaded
+      if (req.file) {
+        payload.fileTugas = `/uploads/${req.file.filename}`;
+        // Trim nama file jika terlalu panjang (max 255 chars)
+        const originalName = req.file.originalname;
+        payload.namaFileTugas = originalName.length > 250
+          ? originalName.substring(0, 247) + '...'
+          : originalName;
+        payload.tipeFileTugas = req.file.mimetype;
+        payload.ukuranFile = `${(req.file.size / 1024).toFixed(2)} KB`;
+      }
+
+      const newTask = await this.tugasDosenUseCase.createTugasAtauKuis(payload);
+      res.status(201).json({ message: "Tugas berhasil dibuat", data: newTask });
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
@@ -32,7 +46,21 @@ async create(req, res) {
 async update(req, res) {
     try {
         const { id } = req.params;
-        const updated = await this.tugasDosenUseCase.updateTugas(id, req.body);
+        const payload = { ...req.body };
+
+        // Add file info if file was uploaded
+        if (req.file) {
+          payload.fileTugas = `/uploads/${req.file.filename}`;
+          // Trim nama file jika terlalu panjang (max 255 chars)
+          const originalName = req.file.originalname;
+          payload.namaFileTugas = originalName.length > 250
+            ? originalName.substring(0, 247) + '...'
+            : originalName;
+          payload.tipeFileTugas = req.file.mimetype;
+          payload.ukuranFile = `${(req.file.size / 1024).toFixed(2)} KB`;
+        }
+
+        const updated = await this.tugasDosenUseCase.updateTugas(id, payload);
         res.status(200).json({ message: "Tugas berhasil diperbarui", data: updated });
     } catch (error) {
         res.status(400).json({ error: error.message });

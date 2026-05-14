@@ -145,9 +145,42 @@ router.post('/', async (req, res) => {
         } : undefined
       },
       include: {
-        soal: { include: { pilihanJawaban: true } }
+        soal: { include: { pilihanJawaban: true } },
+        mataKuliah: true
       }
     });
+
+    try {
+      const relatedData = await prisma.nilai.findMany({
+        where: { idMataKuliah: parseInt(idMataKuliah) },
+        select: { nomorInduk: true }
+      });
+      const relatedNomorInduk = [...new Set(relatedData.map(r => r.nomorInduk))];
+      if (relatedNomorInduk.length > 0) {
+        const mahasiswas = await prisma.mahasiswa.findMany({
+          where: { nomorInduk: { in: relatedNomorInduk } },
+          select: { nim: true }
+        });
+        const relatedNIMs = mahasiswas.map(m => m.nim);
+        if (relatedNIMs.length > 0) {
+          const mataKuliahData = await prisma.mataKuliah.findUnique({
+            where: { idMataKuliah: parseInt(idMataKuliah) }
+          });
+          await prisma.notifikasi.createMany({
+            data: relatedNIMs.map(nim => ({
+              nim,
+              judul: 'Kuis Baru',
+              pesan: `Kuis "${judul}" untuk mata kuliah ${mataKuliahData?.namaMataKuliah || 'ini'} telah tersedia. Ayo kerjakan sekarang!`,
+              tipe: 'kuis',
+              idRef: newKuis.idKuis,
+              tipeRef: 'kuis'
+            }))
+          });
+        }
+      }
+    } catch (e) {
+      console.error('Gagal mengirim notifikasi kuis:', e.message);
+    }
 
     res.status(201).json({ message: 'Kuis berhasil dibuat', data: newKuis });
   } catch (error) {

@@ -8,7 +8,6 @@ export class NilaiUseCase {
       throw new Error("Nomor Induk dan ID Mata Kuliah wajib diisi");
     }
 
-    // Validasi tipe data dan range nilai
     const nilaiTugas = parseFloat(data.nilaiTugas || 0);
     const nilaiKuis = parseFloat(data.nilaiKuis || 0);
 
@@ -20,12 +19,13 @@ export class NilaiUseCase {
       throw new Error("Nilai harus antara 0-100");
     }
 
-    // Hitung otomatis jika nilaiAkhir tidak disediakan
-    if (!data.nilaiAkhir) {
-      data.nilaiAkhir = (nilaiTugas + nilaiKuis) / 2;
-    }
+    // Hitung nilai akhir: tugas 30%, kuis 30%, final/belum ada = 40% atau hitung rata-rata
+    const nilaiAkhir = (nilaiTugas * 0.3 + nilaiKuis * 0.3 + ((data.nilaiAkhir || (nilaiTugas + nilaiKuis) / 2) * 0.4));
 
-    return await this.repository.create(data);
+    return await this.repository.create({
+      ...data,
+      nilaiAkhir: data.nilaiAkhir || (nilaiTugas + nilaiKuis) / 2
+    });
   }
 
   async getNilaiMahasiswa(nomorInduk, idMataKuliah) {

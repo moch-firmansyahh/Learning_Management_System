@@ -24,7 +24,8 @@ async updateStatusManual(idPresensi, statusKehadiran) {
     }
 
     // Update status mahasiswa menjadi Hadir dan kembalikan result
-    return await this.presensiRepository.markAsHadir(nim, idMataKuliah);
+    const result = await this.presensiRepository.markAsHadir(nim, idMataKuliah, tokenScan);
+    return result;
   }
 
   async getRiwayatKehadiran(nim, idMataKuliah) {

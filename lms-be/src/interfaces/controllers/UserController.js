@@ -37,6 +37,22 @@ export class UserController {
     }
   }
 
+  async updateMyProfile(req, res) {
+    try {
+      const nomorInduk = req.user.nomorInduk; // Ambil dari token JWT
+      const { email, telepon } = req.body;
+
+      const result = await this.userUseCase.updateUser(nomorInduk, { email, telepon });
+      
+      res.json({
+        message: "Profil berhasil diperbarui",
+        data: result
+      });
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  }
+
   async delete(req, res) {
     try {
       const { nomorInduk } = req.params;

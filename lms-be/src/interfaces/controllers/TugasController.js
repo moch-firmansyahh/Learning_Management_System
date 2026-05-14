@@ -8,16 +8,42 @@ export class TugasController {
   async getAll(req, res) {
     try {
       const { idMataKuliah } = req.query;
-      const filter = {};
-      if (idMataKuliah) filter.idMataKuliah = idMataKuliah;
       
-      const nim = req.user?.mahasiswa?.nim;
-      if (nim) {
-        filter.nim = nim;
-      } else if (req.user?.nomorInduk) {
-        const mhs = await prisma.mahasiswa.findUnique({ where: { nomorInduk: req.user.nomorInduk } });
-        if (mhs) filter.nim = mhs.nim;
+      // Get nim from user
+      let nim = req.user?.mahasiswa?.nim;
+      const nomorInduk = req.user?.nomorInduk;
+      
+      if (!nim && nomorInduk) {
+        const mhs = await prisma.mahasiswa.findUnique({ where: { nomorInduk } });
+        if (mhs) nim = mhs.nim;
       }
+      
+      if (!nim) {
+        return res.status(400).json({ error: "NIM tidak ditemukan" });
+      }
+      
+      // Get courses taken by mahasiswa (same as dashboard)
+      const mataKuliahList = await prisma.mataKuliah.findMany({
+        where: {
+          OR: [
+            { nilai: { some: { nomorInduk: nomorInduk } } },
+            { presensi: { some: { nim: nim } } },
+            { tugas: { some: { nim: nim } } },
+            { kelompok: { some: { anggota: { some: { nim: nim } } } } },
+          ],
+        },
+        select: { idMataKuliah: true }
+      });
+      
+      const idMkList = mataKuliahList.map(mk => mk.idMataKuliah);
+      
+      const filter = {};
+      if (idMataKuliah) {
+        filter.idMataKuliah = idMataKuliah;
+      } else if (idMkList.length > 0) {
+        filter.idMataKuliah = { in: idMkList };
+      }
+      filter.nim = nim; // For checking submission status
       
       const data = await this.tugasUseCase.getDaftarTugas(filter);
       res.status(200).json(data);
@@ -40,17 +66,9 @@ export class TugasController {
 
   async submit(req, res) {
     try {
-      console.log("=== SUBMIT DEBUG ===");
-      console.log("params:", req.params);
-      console.log("body:", req.body);
-      console.log("user:", req.user);
-      console.log("file:", req.file);
-      
       const idTugas = req.params.idTugas || req.body.idTugas;
       const nim = req.user?.mahasiswa?.nim || req.body.nim;
       const { judul, detailTugas, fileJawaban } = req.body;
-      
-      console.log("idTugas:", idTugas, "nim:", nim);
       
       if (!idTugas || !nim) {
         return res.status(400).json({ error: "idTugas dan nim wajib diisi" });

@@ -16,11 +16,13 @@ import dashboardDosenRoutes from './src/interfaces/routes/dashboardDosenRoutes.j
 import dosenForumRoutes from './src/interfaces/routes/dosenForumRoutes.js';
 import kelompokRoutes from './src/interfaces/routes/kelompokRoutes.js';
 import modulAjarRoutes from './src/interfaces/routes/modulAjarRoutes.js';
+import materiRoutes from './src/interfaces/routes/materiRoutes.js';
 import presensiDosenRoutes from './src/interfaces/routes/presensiDosenRoutes.js';
 import dosenProfileRoutes from './src/interfaces/routes/dosenProfileRoutes.js';
 import tugasDosenRoutes from './src/interfaces/routes/tugasDosenRoutes.js';
 import tugasRoutes from './src/interfaces/routes/tugasRoutes.js';
 import profileRoutes from './src/interfaces/routes/profileRoutes.js';
+import notifikasiRoutes from './src/interfaces/routes/notifikasiRoutes.js';
 
 const app = express();
 const PORT = process.env["PORT_APP"];
@@ -73,12 +75,14 @@ app.use('/api/dosen/dashboard', authMiddleware, dashboardDosenRoutes);
 app.use('/api/dosen/forum', authMiddleware, dosenForumRoutes);
 app.use('/api/kelompok', authMiddleware, kelompokRoutes);
 app.use('/api/modul-ajar', authMiddleware, modulAjarRoutes);
+app.use('/api/materi', authMiddleware, materiRoutes);
 app.use('/api/dosen/presensi', authMiddleware, presensiDosenRoutes);
 app.use('/api/dosen/profile', authMiddleware, dosenProfileRoutes);
 app.use('/api/dosen/tugas', authMiddleware, tugasDosenRoutes); // Dosen tugas management
 app.use('/api/tugas', authMiddleware, tugasRoutes);           // Mahasiswa tugas (harus di atas dosen)
 app.use('/api/tugas', authMiddleware, tugasDosenRoutes);      // Fallback dosen routes (/mata-kuliah/:id, dll)
-app.use('/api/profile', profileRoutes);                       // Shared profile (photo + password)
+app.use('/api/profile', profileRoutes);
+app.use('/api/notifikasi', authMiddleware, notifikasiRoutes);                       // Shared profile (photo + password)
 
 // Debug route for testing
 app.post('/api/tugas-debug', (req, res) => {

@@ -29,11 +29,16 @@ async getDaftarTugas(dosenIdMataKuliahList) {
         matkul: t.mataKuliah?.namaMataKuliah || 'Unknown',
         idMataKuliah: t.idMataKuliah,
         desc: t.detailTugas || '',
-        type: 'Individu',
-        deadline: t.deadlineTugas ? t.deadlineTugas.toISOString().split('T')[0] : '-',
+        type: t.tipeTugas || 'Individu',
+        deadline: t.deadlineTugas ? t.deadlineTugas.toISOString() : null,
         submitted: t.pengumpulanTugas ? t.pengumpulanTugas.length : 0,
         total: t._totalMahasiswa || 10,
-        status: t.deadlineTugas && new Date(t.deadlineTugas) < new Date() ? 'Selesai' : 'Aktif'
+        status: t.deadlineTugas && new Date(t.deadlineTugas) < new Date() ? 'Selesai' : 'Aktif',
+        // File info
+        fileTugas: t.fileTugas || null,
+        namaFileTugas: t.namaFileTugas || null,
+        tipeFileTugas: t.tipeFileTugas || null,
+        ukuranFile: t.ukuranFile || null
     }));
 
     // Format kuis
@@ -45,7 +50,7 @@ async getDaftarTugas(dosenIdMataKuliahList) {
         idMataKuliah: k.idMataKuliah,
         desc: '',
         type: 'Kuis',
-        deadline: k.deadlineKuis ? k.deadlineKuis.toISOString().split('T')[0] : '-',
+        deadline: k.deadlineKuis ? k.deadlineKuis.toISOString() : null,
         submitted: 0,
         total: k.soal ? k.soal.length : 0,
         status: k.deadlineKuis && new Date(k.deadlineKuis) < new Date() ? 'Selesai' : 'Aktif'

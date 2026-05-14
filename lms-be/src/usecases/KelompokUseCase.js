@@ -18,6 +18,7 @@ async getDaftarKelompok(idMataKuliah) {
             nilaiObj[ang.nim] = ang.nilaiTugas ? ang.nilaiTugas.toString() : "";
         });
 
+        const lastSubmission = k.pengumpulan?.[0] || null;
         return {
             id: k.idKelompok,
             name: k.namaKelompok,
@@ -25,7 +26,9 @@ async getDaftarKelompok(idMataKuliah) {
             task: k.tugasName || "–",
             progress: k.progress,
             status: k.status,
-            submitted: k.submitted,
+            submitted: lastSubmission !== null,
+            fileKumpulan: lastSubmission?.fileJawaban || null,
+            judulKumpulan: lastSubmission?.judul || null,
             members: membersArr,
             nilai: nilaiObj
         };
@@ -64,6 +67,7 @@ async getAllKelompok(nipDosen) {
             nilaiObj[ang.nim] = ang.nilaiTugas ? ang.nilaiTugas.toString() : "";
         });
 
+        const lastSubmission = k.pengumpulan?.[0] || null;
         return {
             id: k.idKelompok,
             name: k.namaKelompok,
@@ -71,7 +75,9 @@ async getAllKelompok(nipDosen) {
             task: k.tugasName || "–",
             progress: k.progress,
             status: k.status,
-            submitted: k.submitted,
+            submitted: lastSubmission !== null,
+            fileKumpulan: lastSubmission?.fileJawaban || null,
+            judulKumpulan: lastSubmission?.judul || null,
             idMataKuliah: k.idMataKuliah,
             mataKuliahName: k.mataKuliah?.namaMataKuliah || "-",
             members: membersArr,

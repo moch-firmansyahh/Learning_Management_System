@@ -8,32 +8,18 @@ export class AuthUseCase {
 
   async login(identifier, password, expectedRole) {
     // 1. Detect identifier type dan cari user
-    console.log('🔍 Login attempt with identifier:', identifier);
-    
     let user;
     if (identifier.includes('@')) {
-      // Email format: contains @
-      console.log('📧 Searching by email...');
       user = await this.userRepository.findByEmail(identifier);
     } else if (identifier.match(/^U\d+$/)) {
-      // nomorInduk format: U followed by digits (U001, U002)
-      console.log('🆔 Searching by nomorInduk...');
       user = await this.userRepository.findByNomorInduk(identifier);
     } else if (identifier.match(/^\d{7}$/)) {
-      // NIM format: 7 digits (2021001, 2021002)
-      console.log('🎓 Searching by NIM...');
       user = await this.userRepository.findByNim(identifier);
     } else if (identifier.match(/^\d{18}$/)) {
-      // NIP format: 18 digits (197803252005012002)
-      console.log('👨‍🏫 Searching by NIP...');
       user = await this.userRepository.findByNip(identifier);
     } else {
-      // Try default search (fallback)
-      console.log('❓ Trying default search...');
       user = await this.userRepository.findByNomorInduk(identifier);
     }
-    
-    console.log('👤 User found:', user);
     if (!user) throw new Error('Pengguna tidak ditemukan.');
     if (!user.role) throw new Error('Role user tidak ditemukan.');
 

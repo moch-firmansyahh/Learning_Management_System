@@ -15,7 +15,12 @@ export class TugasUseCase {
         deadlineTugas: t.deadlineTugas ? t.deadlineTugas.toISOString() : null,
         mataKuliah: t.mataKuliah ? t.mataKuliah.namaMataKuliah : "Unknown",
         sudahKumpul: !!userSubmission,
-        fileJawaban: userSubmission?.fileJawaban || null
+        fileJawaban: userSubmission?.fileJawaban || null,
+        // File tugas dari dosen (lampiran soal/instruksi)
+        fileTugas: t.fileTugas || null,
+        namaFileTugas: t.namaFileTugas || null,
+        tipeFileTugas: t.tipeFileTugas || null,
+        ukuranFile: t.ukuranFile || null
       };
     });
   }
@@ -38,13 +43,52 @@ export class TugasUseCase {
         idPengumpulan: existingSubmission.idPengumpulan,
         fileJawaban: existingSubmission.fileJawaban,
         tanggalKumpul: existingSubmission.deadlineTugas
-      } : null
+      } : null,
+      // File tugas dari dosen (lampiran soal/instruksi)
+      fileTugas: tugas.fileTugas || null,
+      namaFileTugas: tugas.namaFileTugas || null,
+      tipeFileTugas: tugas.tipeFileTugas || null,
+      ukuranFile: tugas.ukuranFile || null
     };
   }
 
   async kumpulTugas(payload) {
     const { idTugas, nim, judul, detailTugas, fileJawaban } = payload;
 
+    const tugas = await this.tugasRepository.findTugasById(idTugas);
+    if (!tugas) throw new Error("Tugas tidak ditemukan");
+
+    // Cek apakah mahasiswa ini punya kelompok di matkul yang sama
+    const anggotaKelompok = await this.tugasRepository.findKelompokByNim(nim, tugas.idMataKuliah);
+    const kelompok = anggotaKelompok?.kelompok;
+
+    if (kelompok) {
+      // Submit untuk semua anggota kelompok
+      const semuaAnggota = kelompok.anggota.map(a => a.nim);
+      const results = await Promise.all(semuaAnggota.map(async (anggotaNim) => {
+        const existing = await this.tugasRepository.findPengumpulanByNimAndTugas(anggotaNim, idTugas);
+        if (existing) {
+          return await this.tugasRepository.updatePengumpulan(existing.idPengumpulan, {
+            judul: judul || tugas.judul,
+            detailTugas: detailTugas || "",
+            fileJawaban
+          });
+        }
+        return await this.tugasRepository.createPengumpulan({
+          idTugas,
+          nim: anggotaNim,
+          judul: judul || tugas.judul,
+          detailTugas: detailTugas || "",
+          fileJawaban,
+          deadlineTugas: tugas.deadlineTugas,
+          idKelompok: kelompok.idKelompok
+        });
+      }));
+      // Kembalikan pengumpulan milik yang submit
+      return results.find(r => r.nim === nim) || results[0];
+    }
+
+    // Tidak ada kelompok — submit individu seperti biasa
     const existing = await this.tugasRepository.findPengumpulanByNimAndTugas(nim, idTugas);
     if (existing) {
       return await this.tugasRepository.updatePengumpulan(existing.idPengumpulan, {
@@ -53,9 +97,6 @@ export class TugasUseCase {
         fileJawaban
       });
     }
-
-    const tugas = await this.tugasRepository.findTugasById(idTugas);
-    if (!tugas) throw new Error("Tugas tidak ditemukan");
 
     return await this.tugasRepository.createPengumpulan({
       idTugas,

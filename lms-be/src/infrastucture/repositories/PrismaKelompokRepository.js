@@ -15,6 +15,10 @@ async findAll(nipDosen) {
                         include: { user: true }
                     }
                 }
+            },
+            pengumpulan: {
+                orderBy: { idPengumpulan: 'desc' },
+                take: 1
             }
         }
     });
@@ -30,6 +34,10 @@ async findByMataKuliah(idMataKuliah) {
                         include: { user: true }
                     }
                 }
+            },
+            pengumpulan: {
+                orderBy: { idPengumpulan: 'desc' },
+                take: 1
             }
         }
     });
@@ -51,6 +59,24 @@ async createKelompok(data) {
 
 async addMember(idKelompok, nim) {
     try {
+        // Cek apakah mahasiswa sudah ada di kelompok lain dalam matkul yang sama
+        const targetKelompok = await prisma.kelompok.findUnique({
+            where: { idKelompok: parseInt(idKelompok) },
+            select: { idMataKuliah: true, namaKelompok: true }
+        });
+        if (targetKelompok) {
+            const existingKelompok = await prisma.anggotaKelompok.findFirst({
+                where: {
+                    nim: nim,
+                    kelompok: { idMataKuliah: targetKelompok.idMataKuliah }
+                },
+                include: { kelompok: { select: { namaKelompok: true } } }
+            });
+            if (existingKelompok) {
+                throw new Error(`Mahasiswa sudah tergabung di kelompok "${existingKelompok.kelompok.namaKelompok}" untuk mata kuliah ini`);
+            }
+        }
+
         return await prisma.anggotaKelompok.create({
             data: {
                 idKelompok: parseInt(idKelompok),

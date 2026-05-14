@@ -18,8 +18,17 @@ export class MataKuliahController {
   async getAll(req, res) {
     try {
       if (req.user && req.user.role === 'DOSEN' && req.user.dosen) {
-        // Hanya kembalikan mata kuliah yang diajar dosen tersebut
         const result = await this.mataKuliahUseCase.getByDosen(req.user.dosen.nip);
+        return res.json(result);
+      }
+      
+      if (req.user && req.user.role === 'MAHASISWA') {
+        let nim = req.user?.nomorInduk;
+        const mahasiswa = await prisma.mahasiswa.findUnique({
+          where: { nomorInduk: nim }
+        });
+        const actualNim = mahasiswa ? mahasiswa.nim : nim;
+        const result = await this.mataKuliahUseCase.getByNim(actualNim);
         return res.json(result);
       }
       
