@@ -73,7 +73,10 @@ export default function Navbar({ role, onOpenSidebar, onNavigate }) {
 
     const fetchNotifications = async () => {
       try {
-        const res = await apiClient.get('/api/notifikasi');
+        const [res, unreadRes] = await Promise.all([
+          apiClient.get('/api/notifikasi'),
+          apiClient.get('/api/notifikasi/unread-count')
+        ]);
         console.log('Notifikasi response:', res);
         const notifList = Array.isArray(res) ? res : (res.data || []);
         
@@ -86,7 +89,6 @@ export default function Navbar({ role, onOpenSidebar, onNavigate }) {
           type: n.tipe || 'info'
         })));
 
-        const unreadRes = await apiClient.get('/api/notifikasi/unread-count');
         setUnreadCount(unreadRes?.count || 0);
       } catch (error) {
         console.error("Failed to fetch notifications:", error);
