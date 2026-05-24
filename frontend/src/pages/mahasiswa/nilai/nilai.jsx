@@ -25,7 +25,7 @@ const NILAI_COLOR = {
 
 function NilaiBadge({ nilai }) {
   if (!nilai)
-    return <span className="nlai-badge nlai-badge--pending">Proses</span>;
+    return <span className="nlai-badge nlai-badge--pending">{"Proses"}</span>;
   const style = NILAI_COLOR[nilai] || { bg: "#f8fafc", color: "#64748b" };
   return (
     <span
@@ -287,7 +287,7 @@ export default function Nilai({ onNavigate, onLogout }) {
             className="material-symbols-outlined"
             style={{ fontSize: "1.1rem" }}
           >
-            check_circle
+            {"check_circle"}
           </span>
           {toast}
         </div>
@@ -337,18 +337,17 @@ export default function Nilai({ onNavigate, onLogout }) {
               {/* Page Header */}
               <div className="nlai-page-header">
             <div>
-              <h1 className="nlai-title">Transkrip Nilai</h1>
+              <h1 className="nlai-title">{"Transkrip Nilai"}</h1>
               <p className="nlai-subtitle">
-                Rekap nilai akademik {storedUser.nama || "Mahasiswa"} — NIM{" "}
-                {storedUser.nomorInduk || "NIM"}
+                {"Rekap nilai akademik "}{storedUser.nama || "Mahasiswa"}{" — NIM "}{storedUser.nomorInduk || "NIM"}
               </p>
             </div>
             <button
               className="nlai-download-btn"
               onClick={handleUnduhTranskrip}
             >
-              <span className="material-symbols-outlined">download</span>
-              Unduh Transkrip
+              <span className="material-symbols-outlined">{"download"}</span>
+              {"Unduh Transkrip"}
             </button>
           </div>
 
@@ -356,47 +355,47 @@ export default function Nilai({ onNavigate, onLogout }) {
           <div className="nlai-summary-grid">
             <div className="nlai-sum-card nlai-sum-card--blue">
               <span className="material-symbols-outlined nlai-sum-icon">
-                grade
+                {"grade"}
               </span>
               <div>
                 <p className="nlai-sum-val">{ipkKumulatif}</p>
-                <p className="nlai-sum-lbl">IPK Kumulatif</p>
+                <p className="nlai-sum-lbl">{"IPK Kumulatif"}</p>
               </div>
             </div>
             <div className="nlai-sum-card nlai-sum-card--teal">
               <span className="material-symbols-outlined nlai-sum-icon">
-                school
+                {"school"}
               </span>
               <div>
                 <p className="nlai-sum-val">{totalSksSelesai}</p>
-                <p className="nlai-sum-lbl">SKS Lulus</p>
+                <p className="nlai-sum-lbl">{"SKS Lulus"}</p>
               </div>
             </div>
             <div className="nlai-sum-card nlai-sum-card--amber">
               <span className="material-symbols-outlined nlai-sum-icon">
-                calendar_today
+                {"calendar_today"}
               </span>
               <div>
                 <p className="nlai-sum-val">{semesters.length}</p>
-                <p className="nlai-sum-lbl">Semester Ditempuh</p>
+                <p className="nlai-sum-lbl">{"Semester Ditempuh"}</p>
               </div>
             </div>
             <div className="nlai-sum-card nlai-sum-card--purple">
               <span className="material-symbols-outlined nlai-sum-icon">
-                workspace_premium
+                {"workspace_premium"}
               </span>
               <div>
-                <p className="nlai-sum-val">Cum Laude</p>
-                <p className="nlai-sum-lbl">Predikat Target</p>
+                <p className="nlai-sum-val">{"Cum Laude"}</p>
+                <p className="nlai-sum-lbl">{"Predikat Target"}</p>
               </div>
             </div>
           </div>
 
           {semesters.length === 0 ? (
             <div style={{ textAlign: "center", padding: "4rem 2rem", background: "white", borderRadius: "1rem", marginTop: "2rem" }}>
-              <span className="material-symbols-outlined" style={{ fontSize: "4rem", color: "var(--slate-300)" }}>article</span>
-              <h3 style={{ marginTop: "1rem", color: "var(--slate-700)" }}>Belum Ada Transkrip Nilai</h3>
-              <p style={{ color: "var(--slate-500)", marginTop: "0.5rem" }}>Nilai akan muncul setelah dosen melakukan penilaian pada akhir semester.</p>
+              <span className="material-symbols-outlined" style={{ fontSize: "4rem", color: "var(--slate-300)" }}>{"article"}</span>
+              <h3 style={{ marginTop: "1rem", color: "var(--slate-700)" }}>{"Belum Ada Transkrip Nilai"}</h3>
+              <p style={{ color: "var(--slate-500)", marginTop: "0.5rem" }}>{"Nilai akan muncul setelah dosen melakukan penilaian pada akhir semester."}</p>
             </div>
           ) : (
             <>
@@ -423,12 +422,12 @@ export default function Nilai({ onNavigate, onLogout }) {
               </div>
               <div className="nlai-sem-meta">
                 <div className="nlai-sem-meta-item">
-                  <p className="nlai-sem-meta-lbl">Total SKS</p>
-                  <p className="nlai-sem-meta-val">{sem.sks} SKS</p>
+                  <p className="nlai-sem-meta-lbl">{"Total SKS"}</p>
+                  <p className="nlai-sem-meta-val">{sem.sks} {"SKS"}</p>
                 </div>
                 <div className="nlai-sem-meta-divider"></div>
                 <div className="nlai-sem-meta-item">
-                  <p className="nlai-sem-meta-lbl">IP Semester</p>
+                  <p className="nlai-sem-meta-lbl">{"IP Semester"}</p>
                   <p className="nlai-sem-meta-val nlai-sem-meta-val--blue">
                     {sem.ipk !== null ? sem.ipk.toFixed(2) : "Belum Final"}
                   </p>
@@ -441,14 +440,14 @@ export default function Nilai({ onNavigate, onLogout }) {
               <table className="nlai-table">
                 <thead>
                   <tr>
-                    <th>Kode MK</th>
-                    <th>Mata Kuliah</th>
-                    <th className="nlai-th-center">SKS</th>
-                    <th className="nlai-th-center">Tugas</th>
-                    <th className="nlai-th-center">UTS</th>
-                    <th className="nlai-th-center">UAS</th>
-                    <th className="nlai-th-center">Nilai Akhir</th>
-                    <th className="nlai-th-center">Mutu</th>
+                    <th>{"Kode MK"}</th>
+                    <th>{"Mata Kuliah"}</th>
+                    <th className="nlai-th-center">{"SKS"}</th>
+                    <th className="nlai-th-center">{"Tugas"}</th>
+                    <th className="nlai-th-center">{"UTS"}</th>
+                    <th className="nlai-th-center">{"UAS"}</th>
+                    <th className="nlai-th-center">{"Nilai Akhir"}</th>
+                    <th className="nlai-th-center">{"Mutu"}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -525,15 +524,15 @@ export default function Nilai({ onNavigate, onLogout }) {
                 className="material-symbols-outlined"
                 style={{ fontSize: "1rem", color: "var(--slate-400)" }}
               >
-                info
+                {"info"}
               </span>
-              <p>Bobot Nilai: Tugas 30% · UTS 30% · UAS 40%</p>
+              <p>{"Bobot Nilai: Tugas 30% · UTS 30% · UAS 40%"}</p>
             </div>
           </div>
 
           {/* IPK History Chart */}
           <div className="nlai-chart-card">
-            <h3 className="nlai-chart-title">Perkembangan IP Per Semester</h3>
+            <h3 className="nlai-chart-title">{"Perkembangan IP Per Semester"}</h3>
             <div className="nlai-chart-bars">
               {semesters
                 .filter((s) => s.ipk !== null)
@@ -550,13 +549,13 @@ export default function Nilai({ onNavigate, onLogout }) {
                           ></div>
                         </div>
                       </div>
-                      <p className="nlai-bar-lbl">Sem {i + 1}</p>
+                      <p className="nlai-bar-lbl">{"Sem "}{i + 1}</p>
                     </div>
                   );
                 })}
             </div>
             <div className="nlai-chart-legend">
-              <span>Skala 4.0 — IP ≥ 3.51 = Cum Laude</span>
+              <span>{"Skala 4.0 — IP ≥ 3.51 = Cum Laude"}</span>
             </div>
           </div>
             </>

@@ -159,7 +159,7 @@ export default function MataKuliah({ onNavigate, onLogout, idMataKuliah = 1 }) {
           fontSize: "0.875rem", boxShadow: "0 4px 16px rgba(0,0,0,0.1)",
           display: "flex", alignItems: "center", gap: "0.5rem"
         }}>
-          <span className="material-symbols-outlined" style={{ fontSize: "1.1rem" }}>check_circle</span>
+          <span className="material-symbols-outlined" style={{ fontSize: "1.1rem" }}>{"check_circle"}</span>
           {toast}
         </div>
       )}
@@ -169,7 +169,7 @@ export default function MataKuliah({ onNavigate, onLogout, idMataKuliah = 1 }) {
         <div className="mk-video-modal" onClick={() => setVideoOpen(false)}>
           <div className="mk-video-modal-content" onClick={(e) => e.stopPropagation()}>
             <button className="mk-video-modal-close" onClick={() => setVideoOpen(false)}>
-              <span className="material-symbols-outlined">close</span>
+              <span className="material-symbols-outlined">{"close"}</span>
             </button>
             <div className="mk-video-modal-header">
               <h3>{modules.find(m => m.id === activeModule)?.title || "Video Pembelajaran"}</h3>
@@ -200,7 +200,7 @@ export default function MataKuliah({ onNavigate, onLogout, idMataKuliah = 1 }) {
                     src={activeVideo.url || "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"}
                     poster={getYouTubeThumbnail(activeVideo.url)}
                   >
-                    Browser Anda tidak mendukung tag video.
+                    {"Browser Anda tidak mendukung tag video."}
                   </video>
                 );
               })()}
@@ -239,12 +239,12 @@ export default function MataKuliah({ onNavigate, onLogout, idMataKuliah = 1 }) {
               {/* Course header */}
               <div className="mk-course-header">
             <span className="mk-faculty-badge">
-              <span className="material-symbols-outlined">school</span>
-              FAKULTAS INFORMATIKA
+              <span className="material-symbols-outlined">{"school"}</span>
+              {"FAKULTAS INFORMATIKA"}
             </span>
-            <h2 className="mk-course-title">Mata Kuliah: {course?.namaMataKuliah || course?.nama || "Mata Kuliah"}</h2>
+            <h2 className="mk-course-title">{"Mata Kuliah: "}{course?.namaMataKuliah || course?.nama || "Mata Kuliah"}</h2>
             <p className="mk-course-desc">
-              Silakan pelajari materi dan kerjakan tugas yang tersedia.
+              {"Silakan pelajari materi dan kerjakan tugas yang tersedia."}
             </p>
           </div>
 
@@ -259,6 +259,22 @@ export default function MataKuliah({ onNavigate, onLogout, idMataKuliah = 1 }) {
                   <>
                     <div className="mk-video-card">
                       <div className="mk-video-thumb">
+                        <span className={`mk-type-badge mk-badge-${activeData?.type || "default"}`}>
+                          <span className="material-symbols-outlined" style={{ fontSize: "1rem" }}>
+                            {getTypeIcon(activeData?.meta)}
+                          </span>
+                          {activeData?.type === "pdf"
+                            ? "PDF"
+                            : activeData?.type === "presentasi"
+                              ? "Presentasi"
+                              : activeData?.type === "link"
+                                ? "Link"
+                                : activeData?.type === "dokumen"
+                                  ? "Dokumen"
+                                  : activeData?.type === "spreadsheet"
+                                    ? "Excel"
+                                    : "Materi"}
+                        </span>
                         {activeData?.type === "video" ? (
                           <img
                             src={
@@ -269,24 +285,7 @@ export default function MataKuliah({ onNavigate, onLogout, idMataKuliah = 1 }) {
                             alt={activeData?.title}
                           />
                         ) : (
-                          <div className={`mk-file-placeholder mk-placeholder-${activeData?.type || "default"}`}>
-                            <span className="material-symbols-outlined mk-placeholder-icon">
-                              {getTypeIcon(activeData?.meta)}
-                            </span>
-                            <span className="mk-placeholder-text">
-                              {activeData?.type === "pdf"
-                                ? "DOKUMEN PDF"
-                                : activeData?.type === "presentasi"
-                                  ? "PRESENTASI SLIDE"
-                                  : activeData?.type === "link"
-                                    ? "TAUTAN INTERNET"
-                                    : activeData?.type === "dokumen"
-                                      ? "DOKUMEN TEKS"
-                                      : activeData?.type === "spreadsheet"
-                                        ? "LEMBAR KERJA (SPREADSHEET)"
-                                        : "BERKAS MATERI"}
-                            </span>
-                          </div>
+                          <div className={`mk-file-placeholder mk-placeholder-${activeData?.type || "default"}`} />
                         )}
                         <div className="mk-video-overlay" onClick={async () => {
                           if (activeData?.action === "play") {
@@ -325,8 +324,8 @@ export default function MataKuliah({ onNavigate, onLogout, idMataKuliah = 1 }) {
                     {/* Description */}
                     <div className="mk-desc-card">
                       <h3 className="mk-desc-heading">
-                        <span className="material-symbols-outlined">info</span>
-                        Deskripsi Materi
+                        <span className="material-symbols-outlined">{"info"}</span>
+                        {"Deskripsi Materi"}
                       </h3>
                       <p className="mk-desc-body">
                         {activeData?.deskripsi}
@@ -350,8 +349,8 @@ export default function MataKuliah({ onNavigate, onLogout, idMataKuliah = 1 }) {
               {/* Module List */}
               <div className="mk-module-card">
                 <div className="mk-module-header">
-                  <h3>Daftar Materi</h3>
-                  <span className="mk-prog-badge">{modules.length} MODUL</span>
+                  <h3>{"Daftar Materi"}</h3>
+                  <span className="mk-prog-badge">{modules.length} {"MODUL"}</span>
                 </div>
                 <div className="mk-module-list">
                   {modules.map((m) => {
@@ -397,7 +396,7 @@ export default function MataKuliah({ onNavigate, onLogout, idMataKuliah = 1 }) {
                                   padding: "2px"
                                 }}
                               >
-                                check_circle
+                                {"check_circle"}
                               </span>
                             )}
                           </div>
@@ -423,8 +422,8 @@ export default function MataKuliah({ onNavigate, onLogout, idMataKuliah = 1 }) {
                                 window.open(fileUrl, '_blank');
                               }}
                             >
-                              <span className="material-symbols-outlined">download</span>
-                              Unduh Modul
+                              <span className="material-symbols-outlined">{"download"}</span>
+                              {"Unduh Modul"}
                             </button>
                           )}
                         </div>
@@ -436,14 +435,14 @@ export default function MataKuliah({ onNavigate, onLogout, idMataKuliah = 1 }) {
 
               {/* Instructor */}
               <div className="mk-instructor-card">
-                <p className="mk-inst-label">PENGAJAR</p>
+                <p className="mk-inst-label">{"PENGAJAR"}</p>
                 <div className="mk-inst-row">
                   <div className="mk-inst-avatar" style={{ width: 48, height: 48, borderRadius: '50%', background: 'linear-gradient(135deg, #2f9696, #4b53bc)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700, fontSize: '1.1rem' }}>
                     {(course?.dosen?.user?.nama || course?.dosenNama || "??").split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase()}
                   </div>
                   <div className="mk-inst-info">
                     <p className="mk-inst-name">{course?.dosen?.user?.nama || course?.dosenNama || "Dosen"}</p>
-                    <p className="mk-inst-role">Dosen {course?.namaMataKuliah || course?.nama || ""}</p>
+                    <p className="mk-inst-role">{"Dosen "}{course?.namaMataKuliah || course?.nama || ""}</p>
                   </div>
                 </div>
               </div>
