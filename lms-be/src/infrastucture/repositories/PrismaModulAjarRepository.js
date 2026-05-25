@@ -1,4 +1,4 @@
-import { prisma } from "../../prismaClient.js";
+﻿import { prisma } from "../../prismaClient.js";
 export class PrismaModulAjarRepository {
 async findAllByDosen(filterMatkul, filterTipe, nipDosen) {
     const where = {};
@@ -61,7 +61,6 @@ async create(data) {
                         tipeRef: 'materi'
                     }))
                 });
-                console.log(`Notifikasi Materi dikirim ke ${relatedNIMs.length} mahasiswa`);
             }
         }
     } catch (e) {

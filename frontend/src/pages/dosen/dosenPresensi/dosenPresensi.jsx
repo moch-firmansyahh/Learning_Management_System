@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+﻿import React, { useState, useEffect, useCallback } from "react";
 import "../../../components/shared.css";
 import "./dosenPresensi.css";
 import SidebarDosen from "../../../components/SidebarDosen";
@@ -60,7 +60,6 @@ export default function DosenPresensi({ onNavigate, onLogout }) {
     if (!selectedMatkul?.id) return;
     try {
       const res = await apiClient.get(`/api/dosen/presensi/dates/${selectedMatkul.id}`);
-      console.log("DEBUG - Available dates:", res);
       const dates = res.dates || [];
       // Format tanggal ke YYYY-MM-DD
       const formattedDates = dates.map(d => {
@@ -87,11 +86,9 @@ export default function DosenPresensi({ onNavigate, onLogout }) {
       // Jika ada tanggal yang dipilih (bukan "semua"), fetch by tanggal
       if (dateToUse && dateToUse !== "semua") {
         res = await apiClient.get(`/api/dosen/presensi/daftar-hadir/${selectedMatkul.id}/${dateToUse}?${cacheBuster}`);
-        console.log("DEBUG - Daftar hadir by tanggal:", dateToUse, res);
       } else {
         // Fetch semua (default ke hari ini)
         res = await apiClient.get(`/api/dosen/presensi/matkul/${selectedMatkul.id}/daftar-hadir?${cacheBuster}`);
-        console.log("DEBUG - Daftar hadir default:", res);
       }
       
       // Handle different response structures
@@ -104,8 +101,6 @@ export default function DosenPresensi({ onNavigate, onLogout }) {
         data = res;
       }
       
-      console.log("DEBUG - Extracted students data:", data);
-      console.log("DEBUG - Number of students:", data.length);
       setStudents(data);
     } catch (error) {
       console.error("Error fetching students:", error);
@@ -162,7 +157,6 @@ export default function DosenPresensi({ onNavigate, onLogout }) {
 
   useEffect(() => {
     if (selectedMatkul?.id) {
-      console.log("DEBUG - selectedMatkul changed, fetching dates and students for:", selectedMatkul.id);
       fetchDates();
       fetchStudents();
     }
@@ -171,16 +165,12 @@ export default function DosenPresensi({ onNavigate, onLogout }) {
   // Fetch students saat tanggal berubah
   useEffect(() => {
     if (selectedMatkul?.id && selectedDateFilter) {
-      console.log("DEBUG - selectedDateFilter changed:", selectedDateFilter);
       fetchStudents();
     }
   }, [selectedDateFilter, selectedMatkul?.id, fetchStudents]);
   
   // Log students data for debugging
   useEffect(() => {
-    console.log("DEBUG - students state changed:", students);
-    console.log("DEBUG - students.length:", students.length);
-    console.log("DEBUG - availableDates:", availableDates);
   }, [students, availableDates]);
 
   // Auto-refresh daftar hadir setiap 2 detik saat sesi aktif atau ada tanggal yang dipilih
@@ -189,7 +179,6 @@ export default function DosenPresensi({ onNavigate, onLogout }) {
     // Refresh selalu jalan kalau ada matkul dipilih, tapi lebih cepat saat sessionActive
     const intervalTime = sessionActive ? 2000 : 5000;
     const interval = setInterval(() => {
-      console.log("DEBUG - Auto-refresh triggered, sessionActive:", sessionActive);
       fetchStudents();
     }, intervalTime);
     return () => clearInterval(interval);
@@ -337,7 +326,7 @@ export default function DosenPresensi({ onNavigate, onLogout }) {
                 <div className="dp-jadwal-popup" onClick={(e) => e.stopPropagation()}>
                   <div className="dp-jadwal-header">
                     <span>Pilih Tanggal Presensi</span>
-                    <button onClick={() => setShowJadwal(false)}>×</button>
+                    <button onClick={() => setShowJadwal(false)}>Ã—</button>
                   </div>
                   <input 
                     type="date" 
@@ -356,7 +345,6 @@ export default function DosenPresensi({ onNavigate, onLogout }) {
                         setSessionActive(true);
                         try {
                           const res = await apiClient.post(`/api/dosen/presensi/matkul/${selectedMatkul.id}/generate`, { tanggal: tempDate });
-                          console.log("DEBUG - Generate sesi response:", res);
                           if (res.token) {
                             setToken(res.token);
                             setTimeLeft(QR_TTL);
@@ -407,16 +395,11 @@ export default function DosenPresensi({ onNavigate, onLogout }) {
                   }
                   try {
                     const res = await apiClient.post(`/api/dosen/presensi/matkul/${selectedMatkul.id}/generate`);
-                    console.log("DEBUG - Generate sesi response:", res);
-                    console.log("DEBUG - res.token:", res.token);
                     if (res.token) {
-                      console.log("DEBUG - Setting token:", res.token);
                       setToken(res.token);
                       setTimeLeft(QR_TTL);
                       setQrLoaded(false);
-                      console.log("DEBUG - Token set, sessionActive set to true");
                     } else {
-                      console.log("DEBUG - No token in response!");
                     }
                     setSessionActive(true);
                     // Tambahkan tanggal hari ini ke filter
@@ -550,7 +533,7 @@ export default function DosenPresensi({ onNavigate, onLogout }) {
                     <div>
                       <p className="dp-detail-label">Status Sesi</p>
                       <p className={`dp-detail-value ${sessionActive ? "dp-status--active" : "dp-status--closed"}`}>
-                        {sessionActive ? "● Berlangsung" : "● Ditutup"}
+                        {sessionActive ? "â— Berlangsung" : "â— Ditutup"}
                       </p>
                     </div>
                   </div>
@@ -621,13 +604,8 @@ export default function DosenPresensi({ onNavigate, onLogout }) {
                 </thead>
                 <tbody>
                   {(() => {
-                    console.log("DEBUG RENDER - students.length:", students.length);
-                    console.log("DEBUG RENDER - selectedDateFilter:", selectedDateFilter);
-                    console.log("DEBUG RENDER - availableDates:", availableDates);
                     if (students.length > 0) {
                       const firstStudent = students[0];
-                      console.log("DEBUG RENDER - First student:", firstStudent);
-                      console.log("DEBUG RENDER - First student tanggalPertemuan:", firstStudent?.tanggalPertemuan);
                     }
                     return null;
                   })()}
@@ -640,13 +618,11 @@ export default function DosenPresensi({ onNavigate, onLogout }) {
                   ) : (() => {
                     // Jika semua student punya tanggalPertemuan null, tampilkan semua (sesi belum dibuat)
                     const allNullTanggal = students.every(s => !s.tanggalPertemuan);
-                    console.log("DEBUG FILTER - allNullTanggal:", allNullTanggal);
                     
                     const filtered = selectedDateFilter === "semua" || allNullTanggal
                       ? students 
                       : students.filter(s => {
                           if (!s.tanggalPertemuan) {
-                            console.log("DEBUG FILTER - Student without tanggalPertemuan:", s.nim);
                             return false;
                           }
                           let sDate = null;
@@ -659,10 +635,8 @@ export default function DosenPresensi({ onNavigate, onLogout }) {
                               return false;
                             }
                           }
-                          console.log("DEBUG FILTER - Comparing:", sDate, "vs", selectedDateFilter, "=", sDate === selectedDateFilter);
                           return sDate === selectedDateFilter;
                         });
-                    console.log("DEBUG RENDER - Filtered count:", filtered.length);
                     return filtered.map((s) => (
                     <tr key={s.id}>
                       <td>

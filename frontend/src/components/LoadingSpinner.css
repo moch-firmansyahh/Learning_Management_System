@@ -20,15 +20,17 @@
 
 .logo-loading-box {
   position: relative;
-  width: 80px;
-  height: 80px;
+  width: 90px;
+  height: 90px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  padding: 6px;
+  padding: 7px;
   background: #ffffff;
-  box-shadow: 0 10px 25px -5px rgba(75, 83, 188, 0.1), 0 8px 10px -6px rgba(75, 83, 188, 0.1);
+  box-shadow:
+    0 10px 25px -5px rgba(75, 83, 188, 0.1),
+    0 8px 10px -6px rgba(75, 83, 188, 0.1);
   box-sizing: border-box;
 }
 
@@ -44,8 +46,8 @@
 }
 
 .logo-loading-img {
-  width: 50px;
-  height: 50px;
+  width: 60px;
+  height: 60px;
   object-fit: contain;
 }
 
@@ -54,7 +56,7 @@
   font-size: 0.925rem;
   color: #464653; /* --on-surface-variant */
   font-weight: 600;
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
   letter-spacing: 0.03em;
   animation: pulse-message 1.5s ease-in-out infinite;
   text-align: center;
@@ -70,7 +72,8 @@
 }
 
 @keyframes pulse-message {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.6;
     transform: scale(0.98);
   }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+﻿import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Html5Qrcode } from "html5-qrcode";
 import "../../../components/shared.css";
 import "./presensiMahasiswa.css";
@@ -68,10 +68,8 @@ export default function PresensiMahasiswa({ onNavigate, onLogout }) {
 
         // Add cache-busting to get fresh data
         const res = await apiClient.get(`/api/presensi/mahasiswa/${upcoming[selectedClass].id}?_t=${Date.now()}`);
-        console.log("DEBUG - fetchHistory response:", res);
         const allData = res.data || res || [];
         const myRecords = Array.isArray(allData) ? allData : [];
-        console.log("DEBUG - myRecords:", myRecords);
 
         // Menghapus duplikasi per tanggal pertemuan (prioritaskan status selain Alpha)
         const uniqueRecordsMap = new Map();
@@ -121,7 +119,6 @@ export default function PresensiMahasiswa({ onNavigate, onLogout }) {
               rawWaktu: h.waktuPresensi
             };
           });
-        console.log("DEBUG - formattedHist:", formattedHist);
         setHistory(formattedHist);
       } catch (error) {
         console.error("DEBUG - fetchHistory error:", error);
@@ -248,7 +245,7 @@ export default function PresensiMahasiswa({ onNavigate, onLogout }) {
       <main className="page-main" style={{ backgroundColor: "var(--color-background)" }}>
         <Navbar role="Mahasiswa" onOpenSidebar={openSidebar} onNavigate={onNavigate} />
 
-        {/* ── Toast Notification ── */}
+        {/* â”€â”€ Toast Notification â”€â”€ */}
         {toast && (
           <div className={`pmh-toast pmh-toast--${toast.type}`}>
             <span className="material-symbols-outlined">
@@ -484,8 +481,8 @@ export default function PresensiMahasiswa({ onNavigate, onLogout }) {
                     return filtered.length > 0 ? filtered.map((h, i) => (
                     <div key={i} className="pmh-history-item">
                       <div className="pmh-history-left">
-                        <p className="pmh-history-course">{h.code} — {h.name}</p>
-                        <p className="pmh-history-date">{h.date} · {h.time}</p>
+                        <p className="pmh-history-course">{h.code} â€” {h.name}</p>
+                        <p className="pmh-history-date">{h.date} Â· {h.time}</p>
                       </div>
                       <StatusBadge status={h.status} />
                     </div>

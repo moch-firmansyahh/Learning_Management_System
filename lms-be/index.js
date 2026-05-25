@@ -84,13 +84,7 @@ app.use('/api/tugas', authMiddleware, tugasDosenRoutes);      // Fallback dosen 
 app.use('/api/profile', profileRoutes);
 app.use('/api/notifikasi', authMiddleware, notifikasiRoutes);                       // Shared profile (photo + password)
 
-// Debug route for testing
-app.post('/api/tugas-debug', (req, res) => {
-  console.log("DEBUG endpoint hit");
-  console.log("Headers:", req.headers);
-  console.log("Body:", req.body);
-  res.json({ success: true });
-});
+
 
 app.listen(PORT, () => {
   console.log(`🚀 Server ready at http://localhost:${PORT}`);

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+﻿import React, { useState, useEffect } from "react";
 import "../../../components/shared.css";
 import "./dashboard.css";
 import "./notifikasi.css";
@@ -33,10 +33,7 @@ export default function Dashboard({ onNavigate, onLogout }) {
         }
         const now = new Date();
         const hariIni = ['minggu', 'senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu'][now.getDay()];
-        console.log('DEBUG - Frontend hariIni:', hariIni, '| getDay():', now.getDay(), '| Date:', now.toString());
         const res = await apiClient.get(`/api/dashboard/mahasiswa?hari=${hariIni}`);
-        console.log('Dashboard response:', res);
-        console.log('Full data:', JSON.stringify(res.data, null, 2));
         setDashboardData(res.data || res);
       } catch (error) {
         console.error("Gagal memuat dashboard", error);
@@ -53,8 +50,6 @@ export default function Dashboard({ onNavigate, onLogout }) {
   }, []);
 
   if (!loading) {
-    console.log('=== STATE dashboardData ===', JSON.stringify(dashboardData, null, 2));
-    console.log('jadwal:', dashboardData?.jadwal);
   }
 
   return (
@@ -76,14 +71,14 @@ export default function Dashboard({ onNavigate, onLogout }) {
         {/* Content */}
         <div className="page-content">
           <div className="db-grid">
-            {/* ── Left Column ── */}
+            {/* â”€â”€ Left Column â”€â”€ */}
             <div className="db-left">
               <div className="db-page-header">
                 <h1>Dashboard Mahasiswa</h1>
                 <p>Selamat datang kembali</p>
               </div>
 
-              {/* Hero Card — clickable to profile */}
+              {/* Hero Card â€” clickable to profile */}
               <div
                 className="db-hero-card"
                 style={{ cursor: "pointer" }}
@@ -191,7 +186,7 @@ export default function Dashboard({ onNavigate, onLogout }) {
               </div>
             </div>
 
-            {/* ── Right Column ── */}
+            {/* â”€â”€ Right Column â”€â”€ */}
             <div className="db-right">
               {/* Presensi Card */}
               <div className="db-presensi-card">
@@ -232,7 +227,7 @@ export default function Dashboard({ onNavigate, onLogout }) {
                 </div>
               </div>
 
-              {/* Class Card — clickable to mata kuliah */}
+              {/* Class Card â€” clickable to mata kuliah */}
               {loading ? (
                 <div className="skeleton-card" style={{ height: "180px" }}></div>
               ) : dashboardData?.mataKuliah?.length > 0 ? (
@@ -261,7 +256,7 @@ export default function Dashboard({ onNavigate, onLogout }) {
                           {dashboardData.mataKuliah[0]?.dosenNama || "Dosen"}
                           {dashboardData.mataKuliah[0]?.jadwal && (
                             <span style={{ marginLeft: "0.5rem", color: "var(--color-secondary)" }}>
-                              • {dashboardData.mataKuliah[0]?.jadwal}
+                              â€¢ {dashboardData.mataKuliah[0]?.jadwal}
                             </span>
                           )}
                         </p>
