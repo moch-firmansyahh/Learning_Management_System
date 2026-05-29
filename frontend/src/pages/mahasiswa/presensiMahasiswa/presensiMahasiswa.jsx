@@ -47,9 +47,65 @@ export default function PresensiMahasiswa({ onNavigate, onLogout }) {
         const formatted = list.map((c) => ({
           id: c.idMataKuliah,
           code: `MK${c.idMataKuliah.toString().padStart(3, '0')}`,
-          name: c.namaMataKuliah
+          name: c.namaMataKuliah,
+          jadwal: c.jadwal || "",
+          waktu: c.waktu || ""
         }));
         setUpcoming(formatted);
+
+        // Auto-select class that is today and currently ongoing
+        if (formatted.length > 0) {
+          const daysIndo = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+          const now = new Date();
+          const todayName = daysIndo[now.getDay()].toLowerCase();
+          const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+          let selectedIndex = 0; // fallback to first class
+          let foundOngoing = false;
+          let foundToday = false;
+          let todayFirstIndex = -1;
+
+          for (let i = 0; i < formatted.length; i++) {
+            const c = formatted[i];
+            if (!c.jadwal) continue;
+
+            const scheduledDays = c.jadwal.split(',').map(d => d.trim().toLowerCase());
+            if (scheduledDays.includes(todayName)) {
+              if (todayFirstIndex === -1) {
+                todayFirstIndex = i;
+              }
+              foundToday = true;
+
+              if (c.waktu) {
+                const parts = c.waktu.split('-');
+                if (parts.length === 2) {
+                  const [startStr, endStr] = parts.map(p => p.trim());
+                  const [startH, startM] = startStr.split(':').map(Number);
+                  const [endH, endM] = endStr.split(':').map(Number);
+
+                  if (!isNaN(startH) && !isNaN(startM) && !isNaN(endH) && !isNaN(endM)) {
+                    const startMinutes = startH * 60 + startM;
+                    const endMinutes = endH * 60 + endM;
+
+                    if (currentMinutes >= startMinutes && currentMinutes <= endMinutes) {
+                      selectedIndex = i;
+                      foundOngoing = true;
+                      break;
+                    }
+                  }
+                }
+              }
+            }
+          }
+
+          if (foundOngoing) {
+            setSelectedClass(selectedIndex);
+          } else if (foundToday && todayFirstIndex !== -1) {
+            setSelectedClass(todayFirstIndex);
+          } else {
+            setSelectedClass(0);
+          }
+        }
       } catch (error) {
         console.error("Failed to load courses", error);
         setUpcoming([]);
