@@ -175,18 +175,6 @@ export default function DashboardDosen({ onNavigate, onLogout }) {
                   className="dd-stat-card skeleton-shimmer"
                   style={{ border: "none", minHeight: "8.5rem" }}
                 ></div>
-                <div
-                  className="dd-stat-card skeleton-shimmer"
-                  style={{ border: "none", minHeight: "8.5rem" }}
-                ></div>
-                <div
-                  className="dd-stat-card skeleton-shimmer"
-                  style={{ border: "none", minHeight: "8.5rem" }}
-                ></div>
-                <div
-                  className="dd-stat-card skeleton-shimmer"
-                  style={{ border: "none", minHeight: "8.5rem" }}
-                ></div>
               </>
             ) : (
               <>
@@ -218,48 +206,6 @@ export default function DashboardDosen({ onNavigate, onLogout }) {
                   </p>
                 </div>
 
-                <div className="dd-stat-card">
-                  <div className="dd-stat-top">
-                    <div className="dd-stat-icon dd-icon--green">
-                      <span className="material-symbols-outlined">
-                        check_circle
-                      </span>
-                    </div>
-                    <span className="dd-badge dd-badge--green">Presensi</span>
-                  </div>
-                  <p className="dd-stat-label">Hadir Hari Ini</p>
-                  <p className="dd-stat-value">
-                    {dashboardData?.stats?.mahasiswaHadir || 0}
-                  </p>
-                </div>
-
-                <div className="dd-stat-card">
-                  <div className="dd-stat-top">
-                    <div className="dd-stat-icon dd-icon--amber">
-                      <span className="material-symbols-outlined">
-                        auto_stories
-                      </span>
-                    </div>
-                    <span className="dd-badge dd-badge--amber">Materi</span>
-                  </div>
-                  <p className="dd-stat-label">Modul & Video Diupload</p>
-                  <p className="dd-stat-value">
-                    {dashboardData?.stats?.totalMateri || 0}
-                  </p>
-                </div>
-
-                <div className="dd-stat-card">
-                  <div className="dd-stat-top">
-                    <div className="dd-stat-icon dd-icon--purple">
-                      <span className="material-symbols-outlined">groups</span>
-                    </div>
-                    <span className="dd-badge dd-badge--purple">Total</span>
-                  </div>
-                  <p className="dd-stat-label">Pengumpulan Tugas Kelompok</p>
-                  <p className="dd-stat-value">
-                    {dashboardData?.stats?.tugasKelompok || 0}
-                  </p>
-                </div>
               </>
             )}
           </div>
@@ -277,7 +223,7 @@ export default function DashboardDosen({ onNavigate, onLogout }) {
                 className="dd-table-link"
                 onClick={() => nav("dosenMateri")}
               >
-                Kelola Materi →
+                Selengkapnya →
               </button>
             </div>
             <div className="dd-table-wrapper">
@@ -340,7 +286,7 @@ export default function DashboardDosen({ onNavigate, onLogout }) {
                       </tr>
                     ))
                   ) : dashboardData?.daftarMateri?.length > 0 ? (
-                    dashboardData.daftarMateri.map((materi, i) => (
+                    dashboardData.daftarMateri.slice(0, 5).map((materi, i) => (
                       <tr key={materi.id || i}>
                         <td>
                           <div className="dd-student-cell">
